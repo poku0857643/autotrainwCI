@@ -32,14 +32,15 @@ jobs:
         MLFLOW_TRACKING_URI: "http://your-mlflow-server:5001"
       run: python train.py
 
-    - name: Run Tests
-      run: pytest test.py
+    - name: Run Model Registry Update
+      env:
+        MLFLOW_TRACKING_URI: "http://your-mlflow-server:5001"
+      run: python automation_md_registry.py
 
-    - name: Save model artifact
-        if: success()
-        uses: actions/upload-artifact@v2
-        with:
-          name: trained-model
-          path: artifacts/
+    - name: Schedule Retraining Job
+      env:
+        MLFLOW_TRACKING_URI: "http://your-mlflow-server:5001"
+      run: |
+        nohup python schedule_job.py &
 
 

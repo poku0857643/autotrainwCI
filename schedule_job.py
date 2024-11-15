@@ -1,7 +1,21 @@
-import schedule
-import time
 import os
 from train import train_and_evaluate
+# schedule_job.py
+import schedule
+import time
+import subprocess
+
+def retrain():
+    print("Running automated retraining...")
+    subprocess.run(["python", "automationretraining.py"])
+
+# Schedule the job every day at midnight (you can adjust as needed)
+schedule.every().day.at("00:00").do(retrain)
+
+while True:
+    schedule.run_pending()
+    time.sleep(60)
+
 
 def check_new_data_and_train():
     if os.path.exists("new_data.csv"):  # Check for new data
