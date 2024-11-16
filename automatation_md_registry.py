@@ -1,6 +1,5 @@
 from mlflow.tracking import MlflowClient
 from mlflow.exceptions import RestException
-from mlflow_utils import preprocess_new_data, get_production_accuracy, train_and_evaluate
 from mlflow_utils import preprocess_new_data, get_production_accuracy, train_and_evaluate, promote_model
 
 

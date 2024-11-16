@@ -11,6 +11,9 @@ from mlflow_utils import preprocess_new_data, get_production_accuracy, train_and
 # MLflow Tracking URI
 mlflow.set_tracking_uri("http://0.0.0.0:5001")
 
+# Explicitly set the experiment name
+mlflow.set_experiment("Iris Experiment")
+
 
 # Load data
 data = load_iris()

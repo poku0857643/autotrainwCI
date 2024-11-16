@@ -25,5 +25,5 @@ jobs:
 
       - name: Run Retraining Script
         env:
-          MLFLOW_TRACKING_URI: "http://localhost:5001"
+          MLFLOW_TRACKING_URI: "http://0.0.0.0:5001"
         run: python automationretraining.py
