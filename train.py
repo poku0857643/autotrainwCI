@@ -4,10 +4,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
+from mlflow_utils import preprocess_new_data, get_production_accuracy, train_and_evaluate, promote_model
+
 
 
 # MLflow Tracking URI
-mlflow.set_tracking_uri("http://your-mlflow-server:5001")
+mlflow.set_tracking_uri("http://0.0.0.0:5001")
 
 
 # Load data
