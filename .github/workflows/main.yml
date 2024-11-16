@@ -29,17 +29,17 @@ jobs:
 
     - name: Run Training Script
       env:
-        MLFLOW_TRACKING_URI: "http://your-mlflow-server:5001"
+        MLFLOW_TRACKING_URI: "http://0.0.0.0:5001"
       run: python train.py
 
     - name: Run Model Registry Update
       env:
-        MLFLOW_TRACKING_URI: "http://your-mlflow-server:5001"
+        MLFLOW_TRACKING_URI: "http://0.0.0.0:5001"
       run: python automation_md_registry.py
 
     - name: Schedule Retraining Job
       env:
-        MLFLOW_TRACKING_URI: "http://your-mlflow-server:5001"
+        MLFLOW_TRACKING_URI: "http://0.0.0.0:5001"
       run: |
         nohup python schedule_job.py &
 
