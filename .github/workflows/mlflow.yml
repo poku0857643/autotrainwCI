@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: "0 0 * * *"  # Runs daily at midnight UTC
 
 jobs:
   train-and-log:
@@ -27,25 +29,54 @@ jobs:
         pip install -r requirements.txt
         pip install mlflow pytest
 
-    - name: Run Training Script
+    - name: Run Initial Training
       env:
-        MLFLOW_TRACKING_URI: "https://e3cc-36-230-63-22.ngrok-free.app "
-      run: python train.py
+        MLFLOW_TRACKING_URI: "https://localhost:5001"
+      run: |
+        echo "Starting initial training..."
+        python train.py
+
+    - name: Run Retraining Training
+      env:
+        MLFLOW_TRACKING_URI: "https://localhost:5001"
+      run: |
+        echo "Starting retraining process..."
+        python automationretraining.py
 
     - name: Run Model Registry Update
       env:
-        MLFLOW_TRACKING_URI: "https://e3cc-36-230-63-22.ngrok-free.app "
-      run: python automation_md_registry.py
-
+        MLFLOW_TRACKING_URI: "https://localhost:5001"
+      run: |
+        echo "Updating model registry..."
+        python automation_md_registry.py
+        
     - name: Schedule Retraining Job
       env:
-        MLFLOW_TRACKING_URI: "https://e3cc-36-230-63-22.ngrok-free.app "
+        MLFLOW_TRACKING_URI: "https://localhost:5001"
       run: |
+        echo "Scheduling retraining job..."
         nohup python schedule_job.py &
 
     - name: Run Tests
       env:
-        MLFLOW_TRACKING_URI: "https://e3cc-36-230-63-22.ngrok-free.app "
-      run:
+        MLFLOW_TRACKING_URI: "https://localhost:5001"
+      run: |
+        echo "Running tests..."
         pytest test.py
 
+  dockerize:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Docker Image
+      run: |
+        echo "Building Docker image..."
+        docker build -t mlflow-train-retrain:latest .
+
+    - name: Run Docker Container
+      run: |
+        echo "Running container for training..."
+        docker run -d -e MLFLOW_TRACKING_URI="https://localhost:5001" mlflow-train-retrain:latest
