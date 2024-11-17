@@ -11,23 +11,26 @@ import os
 # MLflow Tracking URI
 mlflow.set_tracking_uri("https://08ee-36-230-63-22.ngrok-free.app")
 
+
+
 # Explicitly set the experiment name
 experiment_name = "Iris Experiment"
 mlflow.set_experiment(experiment_name)
-experiment = mlflow.get_experiment_by_name(experiment_name)
 
-if experiment is None:
-    # Create the experiment if it doesn't exist
-    experiment_id = mlflow.create_experiment(experiment_name)
-    print(f"Created new experiment '{experiment_name}' with ID: {experiment_id}")
-else:
-    # Use the existing experiment ID
-    experiment_id = experiment.experiment_id
-    print(f"Using existing experiment '{experiment_name}' with ID: {experiment_id}")
+#experiment = mlflow.get_experiment_by_name(experiment_name)
+# if experiment is None:
+#     # Create the experiment if it doesn't exist
+#     experiment_id = mlflow.create_experiment(experiment_name)
+#     print(f"Created new experiment '{experiment_name}' with ID: {experiment_id}")
+# else:
+#     # Use the existing experiment ID
+#     experiment_id = experiment.experiment_id
+#     print(f"Using existing experiment '{experiment_name}' with ID: {experiment_id}")
 
 # Create a writable artifact directory
 artifact_location = os.path.expanduser("~/mlflow-artifacts")
 os.makedirs(artifact_location, exist_ok=True)
+
 mlflow.set_tracking_uri(f"file://{artifact_location}")
 
 # Load data
@@ -47,6 +50,7 @@ with mlflow.start_run() as run:
     # Log parameters and metrics
     predictions = model.predict(X_test)
     acc = accuracy_score(y_test, predictions)
+
     mlflow.log_param("n_estimators", 50)
     mlflow.log_metric("accuracy", acc)
 
