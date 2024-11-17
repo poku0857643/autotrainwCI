@@ -16,10 +16,14 @@ experiment_name = "Iris Experiment"
 mlflow.set_experiment(experiment_name)
 experiment = mlflow.get_experiment_by_name(experiment_name)
 
-if experiment:
-    print(f"Experiment '{experiment_name}' exists with ID: {experiment.experiment_id}")
+if experiment is None:
+    # Create the experiment if it doesn't exist
+    experiment_id = mlflow.create_experiment(experiment_name)
+    print(f"Created new experiment '{experiment_name}' with ID: {experiment_id}")
 else:
-    print(f"Experiment '{experiment_name}' does not exist.")
+    # Use the existing experiment ID
+    experiment_id = experiment.experiment_id
+    print(f"Using existing experiment '{experiment_name}' with ID: {experiment_id}")
 
 # Create a writable artifact directory
 artifact_location = os.path.expanduser("~/mlflow-artifacts")
@@ -35,7 +39,7 @@ X_train, X_test, y_train, y_test = train_test_split(data.data, data.target, test
 
 
 
-with mlflow.start_run() as run:
+with mlflow.start_run(experiment_id=experiment_id) as run:
     # Train model
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
@@ -53,9 +57,14 @@ with mlflow.start_run() as run:
     if acc > get_production_accuracy():
         run_id = run.info.run_id  # Use the run ID from the active context
         model_uri = f"runs:/{run_id}/model"
+        print(f"Registering model with URI: {model_uri}")
+
+        # Register the model to the MLflow Model Registry
         registered_model = mlflow.register_model(model_uri, "IrisModel")
         new_version = registered_model.version
 
         # Promote the new model
         promote_model("IrisModel", new_version)
-
+        print(f"New model version {new_version} promoted to Production.")
+    else:
+        print(f"Model accuracy ({acc}) did not surpass production accuracy.")
