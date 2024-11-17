@@ -12,8 +12,14 @@ from mlflow_utils import preprocess_new_data, get_production_accuracy, train_and
 mlflow.set_tracking_uri("https://08ee-36-230-63-22.ngrok-free.app")
 
 # Explicitly set the experiment name
-experiment_name = mlflow.set_experiment("Iris Experiment")
+experiment_name = "Iris Experiment"
+mlflow.set_experiment(experiment_name)
 experiment = mlflow.get_experiment_by_name(experiment_name)
+
+if experiment:
+    print(f"Experiment '{experiment_name}' exists with ID: {experiment.experiment_id}")
+else:
+    print(f"Experiment '{experiment_name}' does not exist.")
 
 # Load data
 data = load_iris()
