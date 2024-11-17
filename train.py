@@ -9,7 +9,7 @@ from mlflow_utils import preprocess_new_data, get_production_accuracy, train_and
 
 
 # MLflow Tracking URI
-mlflow.set_tracking_uri("https://localhost:5001")
+mlflow.set_tracking_uri("https://08ee-36-230-63-22.ngrok-free.app")
 
 # Explicitly set the experiment name
 experiment_name = mlflow.set_experiment("Iris Experiment")

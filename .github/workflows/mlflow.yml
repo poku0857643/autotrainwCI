@@ -31,35 +31,35 @@ jobs:
 
     - name: Run Initial Training
       env:
-        MLFLOW_TRACKING_URI: "https://localhost:5001"
+        MLFLOW_TRACKING_URI: "https://08ee-36-230-63-22.ngrok-free.app"
       run: |
         echo "Starting initial training..."
         python train.py
 
     - name: Run Retraining Training
       env:
-        MLFLOW_TRACKING_URI: "https://localhost:5001"
+        MLFLOW_TRACKING_URI: "https://08ee-36-230-63-22.ngrok-free.app"
       run: |
         echo "Starting retraining process..."
         python automationretraining.py
 
     - name: Run Model Registry Update
       env:
-        MLFLOW_TRACKING_URI: "https://localhost:5001"
+        MLFLOW_TRACKING_URI: "https://08ee-36-230-63-22.ngrok-free.app"
       run: |
         echo "Updating model registry..."
         python automation_md_registry.py
         
     - name: Schedule Retraining Job
       env:
-        MLFLOW_TRACKING_URI: "https://localhost:5001"
+        MLFLOW_TRACKING_URI: "https://08ee-36-230-63-22.ngrok-free.app"
       run: |
         echo "Scheduling retraining job..."
         nohup python schedule_job.py &
 
     - name: Run Tests
       env:
-        MLFLOW_TRACKING_URI: "https://localhost:5001"
+        MLFLOW_TRACKING_URI: "https://08ee-36-230-63-22.ngrok-free.app"
       run: |
         echo "Running tests..."
         pytest test.py
