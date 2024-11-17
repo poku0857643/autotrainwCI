@@ -41,13 +41,13 @@ X_train, X_test, y_train, y_test = train_test_split(data.data, data.target, test
 
 with mlflow.start_run(experiment_id=experiment_id) as run:
     # Train model
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model = RandomForestClassifier(n_estimators=50, random_state=42)
     model.fit(X_train, y_train)
 
     # Log parameters and metrics
     predictions = model.predict(X_test)
     acc = accuracy_score(y_test, predictions)
-    mlflow.log_param("n_estimators", 100)
+    mlflow.log_param("n_estimators", 50)
     mlflow.log_metric("accuracy", acc)
 
     # Log the model

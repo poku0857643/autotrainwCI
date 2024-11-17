@@ -6,6 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from mlflow.tracking import MlflowClient
 from mlflow.exceptions import RestException
+from sklearn.model_selection import GridSearchCV
 
 def preprocess_new_data(file_path):
     data = pd.read_csv(file_path)
@@ -24,10 +25,29 @@ def get_production_accuracy():
         print("No production model found.")
         return 0
 
-def train_and_evaluate(X_train, y_train, X_test, y_test):
+def train_and_evaluate(X_train, y_train, X_test, y_test, param_grid,use_grid_search=False):
     with mlflow.start_run() as run:
-        model = RandomForestClassifier(n_estimators=100, random_state=42)
-        model.fit(X_train, y_train)
+        if use_grid_search:
+            print("Performing grid search for hyperparameter tuning...")
+            grid_search = GridSearchCV(
+                estimator=RandomForestClassifier(random_state=42),
+                param_grid=param_grid,
+                scoring="accuracy",
+                cv=3,
+                n_jobs=-1,
+            )
+            grid_search.fit(X_train, y_train)
+            model = grid_search.best_estimator_
+            best_params = grid_search.best_params_
+
+            # Log hyperparameters from grid search
+            for param, value in best_params.items():
+                mlflow.log_param(param, value)
+        else:
+            model = RandomForestClassifier(n_estimators=100, random_state=42)
+            model.fit(X_train, y_train)
+            mlflow.log_param("n_estimators", 100)
+
         predictions = model.predict(X_test)
         acc = accuracy_score(y_test, predictions)
         mlflow.log_param("n_estimators", 100)
@@ -35,11 +55,12 @@ def train_and_evaluate(X_train, y_train, X_test, y_test):
         mlflow.sklearn.log_model(model, "model")
         production_accuracy = get_production_accuracy()
         if acc > production_accuracy:
+            run_id = run.info.run_id
             model_uri = f"runs:/{run.info.run_id}/model"
-            mlflow.register_model(model_uri, "IrisModel")
-            print("New model registered and promoted to production!")
+            registered_model = mlflow.register_model(model_uri, "IrisModel")
+            promote_model("IrisModel", registered_model.version)
         else:
-            print("New model did not outperform production model.")
+            print("Model accuracy did not meet the threshold. Retraining needed.")
         return acc
 
 def get_production_accuracy():
