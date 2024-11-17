@@ -14,7 +14,7 @@ mlflow.set_tracking_uri("https://08ee-36-230-63-22.ngrok-free.app")
 
 
 # Explicitly set the experiment name
-experiment_name = "Iris Experiment"
+experiment_name = "Iris Experiment1"
 mlflow.set_experiment(experiment_name)
 
 #experiment = mlflow.get_experiment_by_name(experiment_name)
