@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from mlflow_utils import preprocess_new_data, get_production_accuracy, train_and_evaluate, promote_model
-
+import os
 
 
 # MLflow Tracking URI
@@ -20,6 +20,11 @@ if experiment:
     print(f"Experiment '{experiment_name}' exists with ID: {experiment.experiment_id}")
 else:
     print(f"Experiment '{experiment_name}' does not exist.")
+
+# Create a writable artifact directory
+artifact_location = os.path.expanduser("~/mlflow-artifacts")
+os.makedirs(artifact_location, exist_ok=True)
+mlflow.set_tracking_uri(f"file://{artifact_location}")
 
 # Load data
 data = load_iris()
